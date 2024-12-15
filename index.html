@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Music Player</title>
+  <style>
+    /* General Styling */
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(145deg, #141E30, #243B55);
+      font-family: Arial, sans-serif;
+      color: white;
+      background-size: 400% 400%;
+      animation: gradientAnimation 15s ease infinite;
+      overflow: hidden;
+    }
+
+    @keyframes gradientAnimation {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    .player-container {
+      width: 350px;
+      background-color: rgba(30, 41, 59, 0.85);
+      border-radius: 15px;
+      box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.5);
+      padding: 25px;
+      text-align: center;
+      height: 500px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      z-index: 2;
+    }
+    .player-container:hover {
+      transform: scale(1);
+      box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.7);
+    }
+    .song-info {
+      margin-top: 15px;
+      text-align: center;
+    }
+
+    .song-info h3 {
+      margin: 5px 0;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .song-info p {
+      margin: 0;
+      font-size: 14px;
+      color: #adb5bd;
+    }
+
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .controls button {
+      background-color:rgb(30, 41, 59, 0.85);
+      border: none;
+      font-size: 18px;
+      padding: 12px;
+      margin: 0 15px;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+      transition: background-color 0.3s;
+    }
+
+    .controls button:hover {
+      background-color: #253453;
+    }
+
+    .progress-container {
+      margin-top: 20px;
+      width: 100%;
+      background: #374151;
+      height: 5px;
+      border-radius: 5px;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .progress {
+      height: 100%;
+      width: 0%;
+      background-color: #22c55e;
+      transition: width 0.3s;
+    }
+
+    .time {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 5px;
+    }
+
+    .volume-container {
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .volume-container input {
+      margin-left: 10px;
+      width: 80px;
+    }
+
+    /* Bubble Animation */
+    .bubble {
+      position: absolute;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.5);
+      animation: bubbleAnimation 6s infinite;
+    }
+
+    .bubble:nth-child(1) {
+      width: 100px;
+      height: 100px;
+      animation-duration: 6s;
+      animation-delay: 0s;
+      bottom: -150px;
+      left: 20%;
+    }
+
+    .bubble:nth-child(2) {
+      width: 80px;
+      height: 80px;
+      animation-duration: 6s;
+      animation-delay: 1s;
+      bottom: -200px;
+      right: 30%;
+    }
+
+    .bubble:nth-child(3) {
+      width: 120px;
+      height: 120px;
+      animation-duration: 7s;
+      animation-delay: 2s;
+      bottom: -100px;
+      left: 50%;
+    }
+
+    .bubble:nth-child(4) {
+      width: 70px;
+      height: 70px;
+      animation-duration: 5s;
+      animation-delay: 3s;
+      bottom: -250px;
+      right: 10%;
+    }
+
+    @keyframes bubbleAnimation {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 0.5;
+      }
+      100% {
+        transform: translateY(-100vh) scale(1.5);
+        opacity: 0;
+      }
+    }
+
+    /* Sticker Style for "Hip Hop Songs" */
+    .hip-hop-sticker {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #dc8a10;
+      border-radius: 15px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #1e293b;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      display: inline-block;
+      text-align: center;
+    }
+
+  </style>
+</head>
+<body>
+  <!-- Bubble animation for the background -->
+  <div class="bubble"></div>
+  <div class="bubble"></div>
+  <div class="bubble"></div>
+  <div class="bubble"></div>
+
+  <div class="player-container">
+    <div class="song-info">
+      <h3 id="songTitle">Kannala Kannala</h3>
+      <p id="songArtist">Hip Hop Thamiza</p>
+    </div>
+    <div class="controls">
+      <button id="prevBtn">⏮️</button>
+      <button id="playPauseBtn">▶️</button>
+      <button id="nextBtn">⏭️</button>
+    </div>
+    <div class="progress-container" id="progressContainer">
+      <div class="progress" id="progress"></div>
+    </div>
+    <div class="time">
+      <span id="currentTime">00:00</span>
+      <span id="duration">00:00</span>
+    </div>
+    <div class="volume-container">
+      <label for="volume">Volume: </label>
+      <input type="range" id="volume" min="0" max="1" step="0.01" value="0.5">
+    </div>
+    <div class="hip-hop-sticker" id="hipHopSticker">
+      Hip Hop Songs 🎧
+    </div>
+  </div>
+
+  <script>
+    // Songs array
+    const songs = [
+      {
+        title: 'Kannala Kannala',
+        artist: 'Hip Hop Thamiza',
+        src: 'songs/Kannala-Kannala.mp3',
+      },
+      {
+        title: 'Kadhal Cricket',
+        artist: 'Hip Hop Thamiza',
+        src: 'songs/Kadhal-Cricket.mp3',
+      },
+      {
+        title: 'Adiye Sakkarakatti',
+        artist: 'Hip Hop Thamiza',
+        src: 'songs/Adiye-Sakkarakatti.mp3',
+      },
+      {
+        title: 'Enna Nadanthalum',
+        artist: 'Hip Hop Thamiza',
+        src: 'songs/Enna-Nadanthalum.mp3',
+      },
+      {
+        title: 'Maattikkichey Maattikkichey',
+        artist: 'Hip Hop Thamiza',
+        src: 'songs/Maattikkichey-Maattikkichey.mp3',
+      },
+      {
+        title: 'Machi Engalukku Ellam',
+        artist: 'Hip Hop Thamiza',
+        src: 'songs/Machi-Engalukku-Ellam.mp3',
+      },
+      {
+        title: 'Meesaya Murukku',
+        artist: 'Hip Hop Thamiza',
+        src: 'songs/Meesaya-Murukku.mp3',
+      },
+      {
+        title: 'Vaadi Nee Vaadi',
+        artist: 'Hip Hop Thamiza',
+        src: 'songs/Vaadi-Nee-Vaadi.mp3',
+      }
+    ];
+
+    let currentSongIndex = 0;
+    let isPlaying = false;
+    const audio = new Audio(songs[currentSongIndex].src);
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const songTitle = document.getElementById('songTitle');
+    const songArtist = document.getElementById('songArtist');
+    const progress = document.getElementById('progress');
+    const progressContainer = document.getElementById('progressContainer');
+    const currentTimeDisplay = document.getElementById('currentTime');
+    const durationDisplay = document.getElementById('duration');
+    const volumeControl = document.getElementById('volume');
+
+    // Update song info
+    function updateSongInfo() {
+      songTitle.textContent = songs[currentSongIndex].title;
+      songArtist.textContent = songs[currentSongIndex].artist;
+      audio.src = songs[currentSongIndex].src;
+    }
+
+    // Play or pause the song
+    function togglePlayPause() {
+      if (isPlaying) {
+        audio.pause();
+        playPauseBtn.textContent = '▶️';
+      } else {
+        audio.play();
+        playPauseBtn.textContent = '⏸️';
+      }
+      isPlaying = !isPlaying;
+    }
+
+    // Update the progress bar
+    function updateProgress() {
+      const progressPercentage = (audio.currentTime / audio.duration) * 100;
+      progress.style.width = progressPercentage + '%';
+
+      const currentMinutes = Math.floor(audio.currentTime / 60);
+      const currentSeconds = Math.floor(audio.currentTime % 60);
+      currentTimeDisplay.textContent = `${currentMinutes}:${currentSeconds < 10 ? '0' + currentSeconds : currentSeconds}`;
+
+      const durationMinutes = Math.floor(audio.duration / 60);
+      const durationSeconds = Math.floor(audio.duration % 60);
+      durationDisplay.textContent = `${durationMinutes}:${durationSeconds < 10 ? '0' + durationSeconds : durationSeconds}`;
+    }
+
+    // Seek through the song
+    function seek(event) {
+      const progressWidth = progressContainer.clientWidth;
+      const clickPosition = event.offsetX;
+      const seekTime = (clickPosition / progressWidth) * audio.duration;
+      audio.currentTime = seekTime;
+    }
+
+    // Change volume
+    function changeVolume() {
+      audio.volume = volumeControl.value;
+    }
+
+    // Next song
+    function nextSong() {
+      currentSongIndex = (currentSongIndex + 1) % songs.length;
+      updateSongInfo();
+      if (isPlaying) {
+        audio.play();
+      }
+    }
+
+    // Previous song
+    function prevSong() {
+      currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+      updateSongInfo();
+      if (isPlaying) {
+        audio.play();
+      }
+    }
+
+    // Event listeners
+    playPauseBtn.addEventListener('click', togglePlayPause);
+    progressContainer.addEventListener('click', seek);
+    volumeControl.addEventListener('input', changeVolume);
+    document.getElementById('nextBtn').addEventListener('click', nextSong);
+    document.getElementById('prevBtn').addEventListener('click', prevSong);
+
+    // Update the song info when the page loads
+    updateSongInfo();
+
+    // Update the progress while the song plays
+    audio.addEventListener('timeupdate', updateProgress);
+
+    // On song end, go to the next song
+    audio.addEventListener('ended', nextSong);
+  </script>
+</body>
+</html>
